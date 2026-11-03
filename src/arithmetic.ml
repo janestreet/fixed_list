@@ -1,3 +1,5 @@
+[@@@tested]
+
 open! Core
 include Arithmetic_intf
 include Defs
@@ -110,9 +112,11 @@ module Sum = struct
     Type_equal.trans M.a1 M.sum
   ;;
 
+  (* [absurd] can never be called: its argument type is uninhabited. *)
   let absurd (type a b) ((module M) : (a, b succ, zero) t) =
     match Type_equal.trans (Type_equal.sym M.exchange) M.sum with
     | _ -> .
+  [@@untested]
   ;;
 end
 

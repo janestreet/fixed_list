@@ -83,8 +83,8 @@ let%expect_test "compare matches List.compare" =
     let (Fixed_list.T fixed) = Fixed_list.of_list ls in
     let fixed_xs, fixed_ys = Fixed_list.unzip fixed in
     [%test_result: int]
-      ([%compare: (int, _) Fixed_list.t] fixed_xs fixed_ys)
-      ~expect:([%compare: int list] xs ys)
+      (([%compare: (int, _) Fixed_list.t] [@mode local]) fixed_xs fixed_ys)
+      ~expect:(([%compare: int list] [@mode local]) xs ys)
   in
   ()
 ;;

@@ -1,3 +1,5 @@
+[@@@tested]
+
 open! Core
 
 (* so that odoc displays Arithmetic as a collapsed section *)
@@ -12,17 +14,18 @@ type ('a, 'n) t =
 type ('a, 'n) fixed_list = ('a, 'n) t
 type 'a packed = T : ('a, 'n) t -> 'a packed
 
-let%template[@mode m = (local, global)] rec compare
-  : type n. _ -> _ -> (_, n) t @ m -> (_, n) t @ m -> int
-  =
-  fun base_a base_n t1 t2 ->
-  match t1, t2 with
-  | [], [] -> Ordering.to_int Equal
-  | x :: xs, y :: ys ->
-    let result = base_a x y in
-    (match Ordering.of_int result with
-     | Less | Greater -> result
-     | Equal -> (compare [@mode m]) base_a base_n xs ys)
+let%template[@mode m = (local, global)] compare =
+  let rec compare : type n. _ -> _ -> (_, n) t @ m -> (_, n) t @ m -> int =
+    fun base_a base_n t1 t2 ->
+    match t1, t2 with
+    | [], [] -> Ordering.to_int Equal
+    | x :: xs, y :: ys ->
+      let result = base_a x y in
+      (match Ordering.of_int result with
+       | Less | Greater -> result
+       | Equal -> compare base_a base_n xs ys)
+  in
+  compare
 ;;
 
 let of_list lst =
@@ -38,6 +41,7 @@ let of_list lst =
 let[@tail_mod_cons] rec to_list : type n. (_, n) t -> _ list = function
   | [] -> []
   | hd :: tl -> hd :: to_list tl
+[@@untested]
 ;;
 
 let sexp_of_t (type a) sexp_of_a _ (t : (a, _) t) = to_list t |> [%sexp_of: a list]
@@ -85,6 +89,7 @@ let[@tail_mod_cons] rec map : type n. (_, n) t -> f:_ -> (_, n) t =
   match t with
   | [] -> []
   | hd :: tl -> f hd :: map tl ~f
+[@@untested]
 ;;
 
 let mapi : type n. (_, n) t -> f:(int -> _ -> _) -> (_, n) t =
@@ -95,6 +100,7 @@ let mapi : type n. (_, n) t -> f:(int -> _ -> _) -> (_, n) t =
     | hd :: tl -> f i hd :: loop (i + 1) tl
   in
   loop 0 t
+[@@untested]
 ;;
 
 module Indexed_fold (M : sig
@@ -194,6 +200,7 @@ let[@tail_mod_cons] rec map2 : type n. (_, n) t -> (_, n) t -> f:_ -> (_, n) t =
   match t1, t2 with
   | [], [] -> []
   | x :: xs, y :: ys -> f x y :: map2 xs ys ~f
+[@@untested]
 ;;
 
 let rec iter2 : type n. (_, n) t -> (_, n) t -> f:_ -> unit =
@@ -218,6 +225,7 @@ let[@tail_mod_cons] rec map3 : type n. (_, n) t -> (_, n) t -> (_, n) t -> f:_ -
   match t1, t2, t3 with
   | [], [], [] -> []
   | x :: xs, y :: ys, z :: zs -> f x y z :: map3 xs ys zs ~f
+[@@untested]
 ;;
 
 let map2_uneven ~shorter ~longer ~proof ~f =
@@ -244,7 +252,7 @@ let map2_uneven ~shorter ~longer ~proof ~f =
         (f x y :: acc)
         (Sum.shift processed_counter)
         (Sum.decr_second diff_counter)
-    | _ :: _, [] -> Sum.absurd diff_counter
+    | _ :: _, [] -> Sum.absurd diff_counter [@untested]
   in
   let shorter_result, diff = loop shorter longer [] Sum.empty proof in
   rev shorter_result, diff
@@ -529,6 +537,8 @@ let sort t ~compare =
 ;;
 
 module Monad_sequence = struct
+  [@@@untested]
+
   module Distribute = struct
     module Make (M : sig
         type 'a t
