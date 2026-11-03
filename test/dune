@@ -2,4 +2,4 @@
  (name fixed_list_test)
  (libraries core fixed_list)
  (preprocess
-  (pps ppx_jane ppx_quick_test)))
+  (pps ppx_jane ppx_quick_test -compare-require-explicit-locality)))

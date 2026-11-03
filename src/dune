@@ -3,4 +3,5 @@
  (public_name fixed_list)
  (libraries core)
  (preprocess
-  (pps ppx_jane -compare-require-explicit-locality)))
+  (pps ppx_jane ppx_tested -compare-require-explicit-locality
+    -library=fixed_list)))

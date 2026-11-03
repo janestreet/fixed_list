@@ -41,7 +41,7 @@ include Arithmetic
 type ('a, 'n) t =
   | [] : ('a, zero) t
   | ( :: ) : 'a * ('a, 'n) t -> ('a, 'n succ) t
-[@@deriving compare ~localize, sexp_of]
+[@@deriving compare, sexp_of]
 
 type ('a, 'n) fixed_list = ('a, 'n) t
 type 'a packed = T : ('a, 'n) t -> 'a packed

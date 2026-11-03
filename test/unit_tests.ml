@@ -366,3 +366,29 @@ let%expect_test "nonempty list conversion" =
   print_s [%sexp (nl_back : int Nonempty_list.t)];
   [%expect {| (1 2 3) |}]
 ;;
+
+let%expect_test "append with proofs of every [Sums] length" =
+  let print t = print_s [%sexp (to_list t : int list)] in
+  print (append ([] : (int, zero) t) [] ~proof:Sums.left0);
+  [%expect {| () |}];
+  print (append [ 0 ] [ 1 ] ~proof:(Sums.left1 ()));
+  [%expect {| (0 1) |}];
+  print (append [ 0 ] [ 1; 2 ] ~proof:(Sums.left2 ()));
+  [%expect {| (0 1 2) |}];
+  print (append [ 0 ] [ 1; 2; 3 ] ~proof:(Sums.left3 ()));
+  [%expect {| (0 1 2 3) |}];
+  print (append [ 0 ] [ 1; 2; 3; 4 ] ~proof:(Sums.left4 ()));
+  [%expect {| (0 1 2 3 4) |}];
+  print (append [ 0 ] [ 1; 2; 3; 4; 5 ] ~proof:(Sums.left5 ()));
+  [%expect {| (0 1 2 3 4 5) |}];
+  print (append [ 0 ] [ 1; 2; 3; 4; 5; 6 ] ~proof:(Sums.left6 ()));
+  [%expect {| (0 1 2 3 4 5 6) |}];
+  print (append [ 0 ] [ 1; 2; 3; 4; 5; 6; 7 ] ~proof:(Sums.left7 ()));
+  [%expect {| (0 1 2 3 4 5 6 7) |}];
+  print (append [ 0 ] [ 1; 2; 3; 4; 5; 6; 7; 8 ] ~proof:(Sums.left8 ()));
+  [%expect {| (0 1 2 3 4 5 6 7 8) |}];
+  print (append [ 0 ] [ 1; 2; 3; 4; 5; 6; 7; 8; 9 ] ~proof:(Sums.left9 ()));
+  [%expect {| (0 1 2 3 4 5 6 7 8 9) |}];
+  print (append [ 0 ] [ 1; 2; 3; 4; 5; 6; 7; 8; 9; 10 ] ~proof:(Sums.left10 ()));
+  [%expect {| (0 1 2 3 4 5 6 7 8 9 10) |}]
+;;
